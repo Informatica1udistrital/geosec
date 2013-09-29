@@ -1,0 +1,42 @@
+/* 
+    Document   : geosec
+    Created on : 29-sep-2013, 1:30:30
+    Author     : USUARIO
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+body {
+    font-family: Verdana,arial,sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color:#f6f6f6;
+}
+#barratop{background-color: #f0f0f0;height: 15px;width: 100%}
+
+#top{width: 100%;height: 48px;border-top:solid 1px #d0d0d0;border-bottom :solid 1px #d0d0d0;background-color:#aaa;color:#fff;}
+
+#logo{padding: 10px 0 0 20px;}
+
+#logo h2{padding:0;margin:0}
+
+.container{padding:10px 20px;background-color: #fff;}
+
+#footer{width: 100%;height: 100px;background-color:#f6f6f6;}
+#footer .menufooter{background-color:f0f0f0;padding:5px 20px;font-size: 12px;display:block;border-top:solid 1px #d0d0d0;border-bottom :solid 1px #d0d0d0;height: 20px;}
+#footer .menufooter .menufooteroption{display:inline;float:left;margin-right: 20px;}
+#footer .menufooter .footerrights{display:inline;float:right;}
+
+
+#map{
+    width: 1000px;
+    height: 500px;
+    display:block;
+    clear:both;
+    overflow: hidden;
+    border:solid 3px #c0c0c0;
+}

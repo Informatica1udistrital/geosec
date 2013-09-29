@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 28-sep-2013 22:15:53 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="hgeosec.Incidente" table="incidente" catalog="geosec">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="tipocoordenada" class="hgeosec.Tipocoordenada" fetch="select">
+            <column name="tipo" not-null="true" />
+        </many-to-one>
+        <property name="latitud" type="string">
+            <column name="latitud" length="20" not-null="true" />
+        </property>
+        <property name="longitud" type="string">
+            <column name="longitud" length="20" not-null="true" />
+        </property>
+        <property name="descripcion" type="string">
+            <column name="descripcion" length="511" />
+        </property>
+        <property name="fechareporte" type="timestamp">
+            <column name="fechareporte" length="19" not-null="true" />
+        </property>
+        <property name="fechaincidente" type="timestamp">
+            <column name="fechaincidente" length="19" not-null="true" />
+        </property>
+        <property name="estado" type="byte">
+            <column name="estado" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
