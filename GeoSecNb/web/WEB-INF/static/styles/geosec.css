@@ -55,8 +55,11 @@ form input[type="text"].date{width:100px;}
 div.fechahora{
     width: 254px;height: 50px;display:block;clear:both;
 }
-.fechahora select{display:inline;float:left;width: 50px;margin-left: 10px;}
+.fechahora select{display:inline;float:left;width: 55px;margin-left: 22px;}
 div.fechahora input[type="text"].date{width:100px;display:inline;float:left;height: 24px;}
+
+form textarea.error{border:solid 1px #FF0000}
+form label.error{font-size: 10px;color:#FF0000;}
 
 /*miscelaneous*/
 

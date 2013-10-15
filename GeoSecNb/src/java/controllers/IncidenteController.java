@@ -5,8 +5,10 @@
 package controllers;
 
 import hgeosec.Incidente;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -30,8 +32,11 @@ public class IncidenteController {
         //model.addAttribute(new Incidente());
         GeosecService geosecService=new GeosecService();
         List tipos=geosecService.listaTiposCoordenada();
-        Date date = new Date();
-        Calendar.getInstance(TimeZone.getTimeZone(""));
+        Calendar cal =new GregorianCalendar();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        model.put("today",sdf.format(cal.getTime()));
+        model.put("hora",cal.get(Calendar.HOUR_OF_DAY));
+        model.put("minuto",cal.get(Calendar.MINUTE));
         model.put("listaTipos", tipos);
         return "incidente/getReportar";
     }
@@ -46,8 +51,12 @@ public class IncidenteController {
         }
         incidente.setEstado((byte)2); //estado 2 en verificación
         Date date = new Date();
-        incidente.setFechaincidente(date);
         incidente.setFechareporte(date);
+        Calendar cal =new GregorianCalendar();
+        cal.setTime(incidente.getFechaincidente());
+        cal.set(Calendar.HOUR_OF_DAY, incidente.getHora());
+        cal.set(Calendar.MINUTE, incidente.getMinuto());
+        incidente.setFechaincidente(cal.getTime());
         incidente=geosecService.insertaIncidente(incidente);
         return "redirect:/";
     } 

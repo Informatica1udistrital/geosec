@@ -9,9 +9,10 @@
     var marker = null;
     var map = null;
     var geocoder = new google.maps.Geocoder();
+    var today='${today}';
 
     $(document).ready(function () {
-        
+        console.log('today:'+today);
         lat='${latitud}';
         lon='${longitud}';
         console.log('lat:'+lat+' lon:'+lon);
@@ -123,16 +124,30 @@
             </p>
             <div class="fechahora">
                 <form:label for="fechaincidente" path="fechaincidente" cssErrorClass="error">Fecha y hora del suceso</form:label><br/>
-                <form:input path="fechaincidente" cssErrorClass="error" class="rounded3 date" readonly="readonly" /> <form:errors path="fechaincidente" />
+                <form:input path="fechaincidente" cssErrorClass="error" class="rounded3 date" readonly="readonly" value="${today}" /> <form:errors path="fechaincidente" />
                 <select name="hora" id="hora" class="rounded3">
-                    <% for(int i=0;i<24;i++){%>
-                        <option value="<%=i%>"><%=(i<10?"0"+i:i)%></option>
-                    <%}%>
+                    <c:forEach var="i" begin="0" end="23">
+                        <c:choose>
+                            <c:when test="${i==hora}">
+                                <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${i}"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
                 </select>
                 <select name="minuto" id="minuto" class="rounded3">
-                    <% for(int i=0;i<46;i=i+15){%>
-                        <option value="<%=i%>"><%=(i<10?"0"+i:i)%></option>
-                    <%}%>
+                    <c:forEach var="i" begin="0" end="59">
+                        <c:choose>
+                            <c:when test="${i==minuto}">
+                                <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${i}"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
                 </select>
 
             </div>
