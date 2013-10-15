@@ -21,7 +21,30 @@
                 $('#incidente').submit();
             }
         });
+        
+        $("#incidente").validate({
+            rules:{
+                descripcion:'required'
+            }
+        });
+        
+        $("#fechaincidente").datepicker({
+            dateFormat: 'yy/mm/dd',
+            dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+            monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+            maxDate: 0
+        });
     });
+    
+    function validateForm(){
+        var latitud=$('#latitud').val();
+        var longitud=$('#latitud').val();
+        if(latitud==undefined||latitud==''||longitud==undefined||longitud==''){
+            alert('Debe seleccionar un punto del mapa');
+            return;
+        }
+        $('#incidente').submit();
+    }
 
     function initializeMap() {
         var mapOptions = {
@@ -77,7 +100,7 @@
 
         $('#latitud').val(pos.lat());
         $('#longitud').val(pos.lng());
-        map.setCenter(pos);
+        //map.setCenter(pos);
 
     }
 </script>
@@ -86,26 +109,49 @@
 <div class="container">
     <form:form modelAttribute="incidente" action="incidente" method="post">
         <h3>Datos del incidente</h3>
-        <p>
-            <form:label for="tipocoordenada.tipo" path="tipocoordenada.tipo" cssErrorClass="error">Tipo</form:label><br/>
-            <form:select path="tipocoordenada.tipo">
-                <form:options items="${listaTipos}" itemValue="tipo" itemLabel="descripcion"/>
-            </form:select>
-            <form:errors path="tipocoordenada.tipo" />			
-        </p>
-        <p>	
-            <form:label for="descripcion" path="descripcion" cssErrorClass="error">Decripción</form:label><br/>
-            <form:input path="descripcion" /> <form:errors path="descripcion" />
-        </p>
-        <label>Ubicación en el mapa</label>
-        <div id="map"></div>
-        
-        <p>	
-            <form:hidden path="latitud" />
-            <form:hidden path="longitud" />
-            <input type="submit" />
-        </p>
+        <div class="formleft">
+            <p>
+                <form:label for="tipocoordenada.tipo" path="tipocoordenada.tipo" cssErrorClass="error">Tipo</form:label><br/>
+                <form:select path="tipocoordenada.tipo" class="rounded3">
+                    <form:options items="${listaTipos}" itemValue="tipo" itemLabel="descripcion"/>
+                </form:select>
+                <form:errors path="tipocoordenada.tipo" />			
+            </p>
+            <p>	
+                <form:label for="descripcion" path="descripcion" cssErrorClass="error">Descripción</form:label><br/>
+                <form:textarea path="descripcion" required="required" class="rounded3" /> <form:errors path="descripcion" />
+            </p>
+            <div class="fechahora">
+                <form:label for="fechaincidente" path="fechaincidente" cssErrorClass="error">Fecha y hora del suceso</form:label><br/>
+                <form:input path="fechaincidente" cssErrorClass="error" class="rounded3 date" readonly="readonly" /> <form:errors path="fechaincidente" />
+                <select name="hora" id="hora" class="rounded3">
+                    <% for(int i=0;i<24;i++){%>
+                        <option value="<%=i%>"><%=(i<10?"0"+i:i)%></option>
+                    <%}%>
+                </select>
+                <select name="minuto" id="minuto" class="rounded3">
+                    <% for(int i=0;i<46;i=i+15){%>
+                        <option value="<%=i%>"><%=(i<10?"0"+i:i)%></option>
+                    <%}%>
+                </select>
+
+            </div>
+            <p>
+                <input type="button" onclick="validateForm()" value="Enviar" />
+            </p>
+        </div>
+        <div class="formright">
+            <p>
+            <label>Ubicación en el mapa</label>
+            </p>
+            <div id="map"></div>
+            <p>	
+                <form:hidden path="latitud" />
+                <form:hidden path="longitud" />
+            </p>
+        </div>
     </form:form>
+    <div class="clear"></div>
 </div>
 
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>

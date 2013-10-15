@@ -10,7 +10,7 @@
     
     <context:component-scan base-package="controllers" />
     
-    <mvc:annotation-driven />
+    <mvc:annotation-driven/>
     
     <mvc:resources mapping="/static/**" location="/WEB-INF/static/"/>
     
@@ -21,5 +21,8 @@
             <property name="prefix" value="/WEB-INF/jsp/" />
             <property name="suffix" value=".jsp" />
     </bean>
+    
+    <bean id="validator"
+      class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
  
 </beans>
