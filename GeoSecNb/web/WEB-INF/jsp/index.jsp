@@ -8,6 +8,8 @@
     var map = null;
 
     $(document).ready(function () {
+        $('.button').button();
+        
         initializeMap();
         
         $("#fechaincidente").datepicker({
@@ -52,12 +54,13 @@
 
 <div class="menutop">
 <ul>
-  <li><a class="rounded5" href='<spring:url value="/incidente" htmlEscape="true" />'>Reportar incidente</a></li>
-  <li><a class="rounded5" href='<spring:url value="/administrar" htmlEscape="true" />'>Moderador</a></li>
+  <li><a class="button" href='<spring:url value="/incidente" htmlEscape="true" />'>Reportar incidente</a></li>
+  <li><a class="button" href='<spring:url value="/administrar" htmlEscape="true" />'>Moderador</a></li>
+  <li><a class="button" href='<spring:url value="/informes" htmlEscape="true" />'>Informes</a></li>
 </ul>
 </div>
-<div class="principal">
-    <div class="opciones">
+<div class="principal rounded5">
+    <div class="opciones rounded5">
         <p>
             <label for="tipo">Filtrar por tipo</label><br/>
             <c:forEach items="${listaTipos}" var="tipocoordenada">
@@ -69,40 +72,56 @@
         </p>
         <div class="fechahora">
             <label for="fechaincidente">Filtrar por fecha</label><br/>
-            <input type="text" id="fechaincidente" class="rounded3 date" readonly="readonly" value="${today}" />
-            <select name="hora" id="hora" class="rounded3">
-                <c:forEach var="i" begin="0" end="23">
-                    <c:choose>
-                        <c:when test="${i==hora}">
-                            <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${i}"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
-            <select name="minuto" id="minuto" class="rounded3">
-                <c:forEach var="i" begin="0" end="59">
-                    <c:choose>
-                        <c:when test="${i==minuto}">
-                            <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${i}"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
+            <span class="tipoincidente">
+                <span class="labelinterno">Desde:</span>
+                <input type="text" id="fechadesde" class="rounded3 date" readonly="readonly" value="${today}" />
+            </span>
+            <span class="tipoincidente">
+                <span class="labelinterno">Hasta:</span>
+                <input type="text" id="fechahasta" class="rounded3 date" readonly="readonly" value="${today}" />
+            </span>
         </div>
-        <p>
-            <input type="button" onclick="sendFilter()" value="Filtrar" />
-        </p>
+        <div class="fechahora">
+            <label for="horaincidente">Filtrar por horas</label><br/>
+            <span class="tipoincidente">
+                <span class="labelinterno">Desde:</span>
+                <select id="horainicial" class="rounded3">
+                    <c:forEach var="i" begin="0" end="23">
+                        <c:choose>
+                            <c:when test="${i==hora}">
+                                <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${i}"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </select>
+            </span>
+            <span class="tipoincidente">
+                <span class="labelinterno">Hasta:</span>
+                <select id="horafinal" class="rounded3">
+                    <c:forEach var="i" begin="0" end="23">
+                        <c:choose>
+                            <c:when test="${i==hora}">
+                                <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${i}"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </select>
+            </span>
+        </div>
+        <div class="fechahora lineatop">
+            <input type="button" class="button" onclick="sendFilter()" value="Filtrar" />
+        </div>
     </div>
 
     <div class="principalmap">
         <div id="mapa" class="rounded5"></div>
     </div>
 </div>
-
+<div class="clear"></div>
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>
