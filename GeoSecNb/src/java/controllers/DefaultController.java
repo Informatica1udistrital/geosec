@@ -5,9 +5,7 @@
 package controllers;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import org.springframework.stereotype.Controller;
@@ -38,19 +36,5 @@ public class DefaultController {
         model.put("minuto",cal.get(Calendar.MINUTE));
         model.put("listaTipos", tipos);
         return "index";
-    }
-    
-    @RequestMapping(value="/incidentesFiltro", method= RequestMethod.GET)
-    public List incidentesFiltro(String tipos, Date from, Date to, int hi, int hf){
-        List iTipos=new ArrayList();
-        GeosecService geosecService=new GeosecService();
-        if(tipos!=null&&tipos.isEmpty()){
-            String []sTipos=tipos.split(",");
-            for(int i=0;i<sTipos.length;i++){
-                iTipos.add(Integer.parseInt(sTipos[i]));
-            }
-        }
-        List items=geosecService.getIncidentes(iTipos, from, to, hi, hf);
-        return items;
     }
 }

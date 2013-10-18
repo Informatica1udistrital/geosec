@@ -26,7 +26,7 @@ public class GeosecService {
     
     /**
     * Obtiene lista de incidentes con varios parámetros
-    * @param tipo lo aplica si es mayor a 0
+    * @param tipos lo aplica si es mayor a 0
     * @param from lo aplica si es diferente de null
     * @param to lo aplica si from es diferente de null
     * @param hi lo aplica si hi es diferente de hf

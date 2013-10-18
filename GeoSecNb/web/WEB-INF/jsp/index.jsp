@@ -4,8 +4,9 @@
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLHRdca8dIAKOzZ6s4XUB4GXh7RDWJPac&sensor=true"></script>
 <script type="text/javascript">
 
-    var marker = null;
+    var markers=null;
     var map = null;
+    var json='';
 
     $(document).ready(function () {
         $('.button').button();
@@ -34,9 +35,11 @@
                 $('#from').datepicker( "option", "maxDate", selectedDate );
             }
         });
+        sendFilter();
     });
     
     function initializeMap() {
+        markers=new Array();
         var mapOptions = {
             center: new google.maps.LatLng(4.6431503595568, -74.092328125),
             zoom: 12,
@@ -49,20 +52,17 @@
         map = new google.maps.Map(document.getElementById("mapa"), mapOptions);
     }
 
-    function setFirstMarker(latLng) {
-        if (marker == null) {
-            marker = new google.maps.Marker({
-                position: latLng,
-                title: '',
-                map: map,
-                draggable: true
-            });
-            google.maps.event.addListener(marker, 'dragend', function () {
-                console.log('mostrar descripcion');
-            });
-        } else {
-            marker.setPosition(latLng);
-        }
+    function setMarker(latLng) {
+        marker = new google.maps.Marker({
+            position: latLng,
+            title: '',
+            map: map,
+            draggable: true
+        });
+        google.maps.event.addListener(marker, 'dragend', function () {
+            console.log('mostrar descripcion');
+        });
+        markers.push(marker);
     }
     
     function clearFilter(tipo){
@@ -77,6 +77,9 @@
     }
 
     function sendFilter(){
+        $.each(markers,function(){
+            
+        });
         var from=$('#from').val();
         var to=$('#to').val();
         var hi=$('#horainicial').val();
@@ -94,12 +97,20 @@
         }
         
         $.ajax({
-            url:'<spring:url value="/Default/incidentesFiltro"/>',
+            url:'${pageContext.servletContext.contextPath}/ajax/incidentesFiltro.json',
             data:{tipos:tipos, from:from, to:to, hi:hi, hf:hf},
             dataType:'json',
             cache:false,
             success:function(result){
-                alert('result:'+result);
+                alert('latitud:'+result);
+                json=result;
+                $.each(result,function(){
+                    var latLng = new google.maps.LatLng(this.latitud, this.longitud);
+                    setMarker(latLng);
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                alert("error:" + textStatus + " exception:" + errorThrown);
             }
         });
     }

@@ -79,22 +79,22 @@ public class GeosecHelper {
         List<Incidente> incidentesList = null;
         try {
             org.hibernate.Transaction tx = session.beginTransaction();
-            String sTipo=tipos.size()>0?"i.tipo in (:tipos) and":"";
-            String sFecha=from!=null?"date(i.fechaincidente) between date(:from) and date(:to)":"";
+            String sTipo=tipos.size()>0?"i.tipocoordenada.tipo in (:tipos) and":"";
+            String sFecha=from!=null&&(from.compareTo(to)!=0)?"date(i.fechaincidente) between date(:from) and date(:to) and":"";
             String hqlQuery;
             if(hi==hf){
-                hqlQuery="select i from incidente i where "+sTipo+" "+sFecha+" and estado=:estado";
+                hqlQuery="from Incidente i where "+sTipo+" "+sFecha+" i.estado=:estado";
             } else if(hi<hf){
-                hqlQuery="select i from incidente i where "+sTipo+" "+sFecha+" and hour(i.fechaincidente) between :hi and :hf and estado=:estado";
+                hqlQuery="from Incidente i where "+sTipo+" "+sFecha+" hour(i.fechaincidente) between :hi and :hf and i.estado=:estado";
             }else{
-                hqlQuery="select i from incidente i where "+sTipo+" "+sFecha+" and (hour(i.fechaincidente)>=:hf or hour(i.fechaincidente<=:hi)) and estado=:estado";
+                hqlQuery="from Incidente i where "+sTipo+" "+sFecha+" (hour(i.fechaincidente)>=:hf or hour(i.fechaincidente<=:hi)) and i.estado=:estado";
             }
             Query query=session.createQuery(hqlQuery);
             query.setBoolean("estado", true);
             if(tipos.size()>0){
                 query.setParameterList("tipos", tipos);
             }
-            if(from!=null){
+            if(from!=null&&from.compareTo(to)!=0){
                 query.setDate("from", from);
                 query.setDate("to", to);
             }
