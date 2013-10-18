@@ -12,11 +12,27 @@
         
         initializeMap();
         
-        $("#fechaincidente").datepicker({
+         $('#from').datepicker({
             dateFormat: 'yy/mm/dd',
             dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
             monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-            maxDate: 0
+            maxDate: 0,
+            changeMonth: true,
+            numberOfMonths: 3,
+            onClose: function( selectedDate ) {
+                $('#to' ).datepicker( "option", "minDate", selectedDate );
+            }
+        });
+        $('#to').datepicker({
+            dateFormat: 'yy/mm/dd',
+            dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+            monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+            maxDate: 0,
+            changeMonth: true,
+            numberOfMonths: 3,
+            onClose: function( selectedDate ) {
+                $('#from').datepicker( "option", "maxDate", selectedDate );
+            }
         });
     });
     
@@ -48,6 +64,45 @@
             marker.setPosition(latLng);
         }
     }
+    
+    function clearFilter(tipo){
+        if(tipo=='fecha'){
+            $('#from').val($('#today').val());
+            $('#to').val($('#today').val());
+        }else{
+            $('#horainicial').val(0);
+            $('#horafinal').val(0);
+        }
+        sendFilter();
+    }
+
+    function sendFilter(){
+        var from=$('#from').val();
+        var to=$('#to').val();
+        var hi=$('#horainicial').val();
+        var hf=$('#horafinal').val();
+        var tipos='';
+        $('.cbtipo').each(function(){
+            if($(this).is(':checked')){
+                tipos+=$(this).val()+',';
+            }
+        });
+        
+        console.log('sendFilter from:'+from+' to:'+to+' hi:'+hi+' hf:'+hf+' tipos:'+tipos);
+        if(tipos!=''){
+            tipos=tipos.substring(0,tipos.length-1);
+        }
+        
+        $.ajax({
+            url:'<spring:url value="/Default/incidentesFiltro"/>',
+            data:{tipos:tipos, from:from, to:to, hi:hi, hf:hf},
+            dataType:'json',
+            cache:false,
+            success:function(result){
+                alert('result:'+result);
+            }
+        });
+    }
 
 </script>
 
@@ -61,24 +116,27 @@
 </div>
 <div class="principal rounded5">
     <div class="opciones rounded5">
-        <p>
+        <div class="fechahora">
             <label for="tipo">Filtrar por tipo</label><br/>
             <c:forEach items="${listaTipos}" var="tipocoordenada">
                 <span class="tipoincidente">
-                    <input type="checkbox" value="${tipocoordenada.tipo}" checked="checked"/>
+                    <input type="checkbox" value="${tipocoordenada.tipo}" checked="checked" class="cbtipo"/>
                     <span class="desc">${tipocoordenada.descripcion}</span>
                 </span>
             </c:forEach>
-        </p>
+        </div>
         <div class="fechahora">
             <label for="fechaincidente">Filtrar por fecha</label><br/>
             <span class="tipoincidente">
                 <span class="labelinterno">Desde:</span>
-                <input type="text" id="fechadesde" class="rounded3 date" readonly="readonly" value="${today}" />
+                <input type="text" id="from" class="rounded3 date" readonly="readonly" value="${today}" />
             </span>
             <span class="tipoincidente">
                 <span class="labelinterno">Hasta:</span>
-                <input type="text" id="fechahasta" class="rounded3 date" readonly="readonly" value="${today}" />
+                <input type="text" id="to" class="rounded3 date" readonly="readonly" value="${today}" />
+            </span>
+            <span class="tipoincidente">
+                <a class="clearfilter" href="javascript:void(0)" onclick="clearFilter('fecha')">Quitar filtro por fecha</a>
             </span>
         </div>
         <div class="fechahora">
@@ -88,7 +146,7 @@
                 <select id="horainicial" class="rounded3">
                     <c:forEach var="i" begin="0" end="23">
                         <c:choose>
-                            <c:when test="${i==hora}">
+                            <c:when test="${i==0}">
                                 <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
                             </c:when>
                             <c:otherwise>
@@ -103,7 +161,7 @@
                 <select id="horafinal" class="rounded3">
                     <c:forEach var="i" begin="0" end="23">
                         <c:choose>
-                            <c:when test="${i==hora}">
+                            <c:when test="${i==0}">
                                 <option value="${i}" selected="selected"><fmt:formatNumber type="number" pattern="00" value="${i}"/></option>
                             </c:when>
                             <c:otherwise>
@@ -112,6 +170,9 @@
                         </c:choose>
                     </c:forEach>
                 </select>
+            </span>
+            <span class="tipoincidente">
+                <a class="clearfilter" href="javascript:void(0)" onclick="clearFilter('hora')">Quitar filtro por hora</a>
             </span>
         </div>
         <div class="fechahora lineatop">
@@ -122,6 +183,8 @@
     <div class="principalmap">
         <div id="mapa" class="rounded5"></div>
     </div>
+    <input type="hidden" value="${today}" id="today">
 </div>
+
 <div class="clear"></div>
 <%@ include file="/WEB-INF/jsp/footer.jsp" %>

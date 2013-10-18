@@ -1,7 +1,9 @@
 package hgeosec;
 
+import java.util.Date;
 import java.util.List;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
@@ -15,14 +17,93 @@ public class GeosecHelper {
         this.session = HibernateUtil.getSessionFactory().getCurrentSession();
     }
     
+    public List getIncidentes(){
+        List<Incidente> incidentesList = null;
+        try {
+            org.hibernate.Transaction tx = session.beginTransaction();
+            Criteria criteria=session.createCriteria(Incidente.class);
+            incidentesList=(List<Incidente>)criteria.list();
+            tx.commit();
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+        return incidentesList;
+    }
+    
     public List getIncidentes(int tipo){
         List<Incidente> incidentesList = null;
         try {
             org.hibernate.Transaction tx = session.beginTransaction();
             Criteria criteria=session.createCriteria(Incidente.class);
             criteria.add(Restrictions.eq("estado", true));
-            criteria.createAlias("tipocoordenada", "tc").add(Restrictions.eq("tc.tipo", tipo));
+            if(tipo>0){
+                criteria.createAlias("tipocoordenada", "tc").add(Restrictions.eq("tc.tipo", tipo));
+            }
             incidentesList=(List<Incidente>)criteria.list();
+            tx.commit();
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+        return incidentesList;
+    }
+    
+    public List getIncidentes(int tipo, Date from, Date to){
+        List<Incidente> incidentesList = null;
+        try {
+            org.hibernate.Transaction tx = session.beginTransaction();
+            Criteria criteria=session.createCriteria(Incidente.class);
+            criteria.add(Restrictions.eq("estado", true));
+            criteria.add(Restrictions.ge("fechaincidente", from));
+            criteria.add(Restrictions.le("fechaincidente", to));
+            if(tipo>0){
+                criteria.createAlias("tipocoordenada", "tc").add(Restrictions.eq("tc.tipo", tipo));
+            }
+            incidentesList=(List<Incidente>)criteria.list();
+            tx.commit();
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+        return incidentesList;
+    }
+    
+    /**
+     * Obtiene lista de incidentes con varios parámetros
+     * @param tipo lo aplica si es mayor a 0
+     * @param from lo aplica si es diferente de null
+     * @param to lo aplica si from es diferente de null
+     * @param hi lo aplica si hi es diferente de hf
+     * @param hf
+     * @return 
+     */
+    public List getIncidentes(List tipos, Date from, Date to, int hi, int hf){
+        List<Incidente> incidentesList = null;
+        try {
+            org.hibernate.Transaction tx = session.beginTransaction();
+            String sTipo=tipos.size()>0?"i.tipo in (:tipos) and":"";
+            String sFecha=from!=null?"date(i.fechaincidente) between date(:from) and date(:to)":"";
+            String hqlQuery;
+            if(hi==hf){
+                hqlQuery="select i from incidente i where "+sTipo+" "+sFecha+" and estado=:estado";
+            } else if(hi<hf){
+                hqlQuery="select i from incidente i where "+sTipo+" "+sFecha+" and hour(i.fechaincidente) between :hi and :hf and estado=:estado";
+            }else{
+                hqlQuery="select i from incidente i where "+sTipo+" "+sFecha+" and (hour(i.fechaincidente)>=:hf or hour(i.fechaincidente<=:hi)) and estado=:estado";
+            }
+            Query query=session.createQuery(hqlQuery);
+            query.setBoolean("estado", true);
+            if(tipos.size()>0){
+                query.setParameterList("tipos", tipos);
+            }
+            if(from!=null){
+                query.setDate("from", from);
+                query.setDate("to", to);
+            }
+            if(hi!=hf){
+                query.setInteger("hi", hi);
+                query.setInteger("hf", hi);
+            }
+            
+            incidentesList=(List<Incidente>)query.list();
             tx.commit();
         } catch (Exception e) {
             System.err.println(e.toString());

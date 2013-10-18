@@ -47,7 +47,7 @@ public class IncidenteController {
             model.put("listaTipos", tipos);
             return "incidente/getReportar";
         }
-        incidente.setEstado((byte)2); //estado 2 en verificación
+        incidente.setEstado((byte)1); //estado 2 en verificación
         Date date = new Date();
         incidente.setFechareporte(date);
         Calendar cal =new GregorianCalendar();
