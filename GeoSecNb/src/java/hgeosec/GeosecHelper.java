@@ -87,7 +87,7 @@ public class GeosecHelper {
             } else if(hi<hf){
                 hqlQuery="from Incidente i where "+sTipo+" "+sFecha+" hour(i.fechaincidente) between :hi and :hf and i.estado=:estado";
             }else{
-                hqlQuery="from Incidente i where "+sTipo+" "+sFecha+" (hour(i.fechaincidente)>=:hf or hour(i.fechaincidente<=:hi)) and i.estado=:estado";
+                hqlQuery="from Incidente i where "+sTipo+" "+sFecha+" (hour(i.fechaincidente)>=:hi or hour(i.fechaincidente)<=:hf) and i.estado=:estado";
             }
             Query query=session.createQuery(hqlQuery);
             query.setBoolean("estado", true);
@@ -100,9 +100,8 @@ public class GeosecHelper {
             }
             if(hi!=hf){
                 query.setInteger("hi", hi);
-                query.setInteger("hf", hi);
+                query.setInteger("hf", hf);
             }
-            
             incidentesList=(List<Incidente>)query.list();
             tx.commit();
         } catch (Exception e) {

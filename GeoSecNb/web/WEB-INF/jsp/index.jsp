@@ -5,8 +5,12 @@
 <script type="text/javascript">
 
     var markers=null;
+    var infoWindow=null;
     var map = null;
     var json='';
+    var tipos=new Array('No definido','Robo','Cruce peligroso','Zona oscura', 'CAI');
+    var bounds = null;
+    var icon_url='${pageContext.servletContext.contextPath}/static/styles/images/point';
 
     $(document).ready(function () {
         $('.button').button();
@@ -40,6 +44,8 @@
     
     function initializeMap() {
         markers=new Array();
+        infoWindows=new Array();
+
         var mapOptions = {
             center: new google.maps.LatLng(4.6431503595568, -74.092328125),
             zoom: 12,
@@ -50,21 +56,40 @@
             }
         };
         map = new google.maps.Map(document.getElementById("mapa"), mapOptions);
+        infowindow = new google.maps.InfoWindow({
+            content: 'cargando...',
+            maxWidth: 400
+	});
     }
 
-    function setMarker(latLng) {
+    function setMarker(latLng, desc, tipo) {
+        var icon=icon_url+tipo+'.png';
+    
         marker = new google.maps.Marker({
             position: latLng,
             title: '',
             map: map,
-            draggable: true
+            draggable: true,
+            html:'<div id="infowindow"><h3>'+getTipo(tipo)+'</h3><p>'+desc+'</p></div>',
+            icon:icon
         });
-        google.maps.event.addListener(marker, 'dragend', function () {
-            console.log('mostrar descripcion');
+        google.maps.event.addListener(marker, 'click', function () {
+            infowindow.setContent(this.html);
+            infowindow.open(map, this);
         });
         markers.push(marker);
+        bounds.extend(marker.getPosition());
+
     }
     
+    function getTipo(tipo){
+        var textoTipo=tipos[tipo];
+        if(textoTipo==undefined||textoTipo==''){
+            textoTipo='Incidente';
+        }
+        return textoTipo;
+    }
+
     function clearFilter(tipo){
         if(tipo=='fecha'){
             $('#from').val($('#today').val());
@@ -78,8 +103,9 @@
 
     function sendFilter(){
         $.each(markers,function(){
-            
+            this.setMap(null);
         });
+        markers = [];
         var from=$('#from').val();
         var to=$('#to').val();
         var hi=$('#horainicial').val();
@@ -102,12 +128,16 @@
             dataType:'json',
             cache:false,
             success:function(result){
-                alert('latitud:'+result);
+                bounds = null;
+                bounds = new google.maps.LatLngBounds();
                 json=result;
                 $.each(result,function(){
                     var latLng = new google.maps.LatLng(this.latitud, this.longitud);
-                    setMarker(latLng);
+                    setMarker(latLng, this.descripcion, this.tipocoordenada);
                 });
+                if(markers.length>0){
+                    map.setCenter(bounds.getCenter());
+                }
             },
             error: function(jqXHR, textStatus, errorThrown){
                 alert("error:" + textStatus + " exception:" + errorThrown);
